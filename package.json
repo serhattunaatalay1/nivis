@@ -1,0 +1,11 @@
+{
+  "name": "nivis",
+  "version": "2.0.0",
+  "description": "Polar Field Telemetry & Metabolic Decision Support System",
+  "main": "src/engine.js",
+  "scripts": {
+    "test": "node tests/engine.test.js"
+  },
+  "author": "Serhat Tuna Atalay",
+  "license": "MIT"
+}

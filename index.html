@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050814">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NIVIS">
+  
+  <title>NIVIS - Polar Field Telemetry & Decision Console</title>
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./styles.css">
+  
+  <!-- Offline Zero-Dependency QR & Scanner Libraries -->
+  <script src="./qrcode.min.js"></script>
+  <script src="./jsqr.min.js"></script>
+</head>
+<body>
+
+  <div class="app-viewport">
+    <canvas id="auroraCanvas" class="aurora-canvas"></canvas>
+    <div id="nivisToast" class="nivis-toast"></div>
+    
+    <!-- 1. STICKY QUICK TELEMETRY HUD -->
+    <header class="telemetry-hud">
+      <div class="hud-top-bar">
+        <div class="hud-brand">
+          <svg class="icon-svg icon-lg" style="color:var(--accent-cyan);" viewBox="0 0 24 24">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/>
+          </svg>
+          <span class="hud-logo">NIVIS</span>
+          <span class="hud-tag" data-i18n="subTag">Kutup Karar Destek</span>
+        </div>
+        <div class="hud-actions">
+          <button id="fieldModeToggleBtn" class="hud-btn" title="Eldivenle kullanım modu">
+            🧤 <span data-i18n="fieldMode">Saha</span>
+          </button>
+          <button id="langToggleBtn" class="hud-btn tabular" style="font-weight:700;">EN</button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Row -->
+      <div class="hud-metrics-row">
+        <!-- TDEE -->
+        <div class="metric-pill">
+          <span class="metric-pill-label">🔥 <span data-i18n="hudTdee">TDEE Hedef</span></span>
+          <div class="metric-pill-value tabular">
+            <span id="hudTdeeVal">0</span> <span class="metric-pill-unit">kcal</span>
+          </div>
+        </div>
+
+        <!-- Wind Chill -->
+        <div class="metric-pill">
+          <span class="metric-pill-label">❄️ <span data-i18n="hudChill">Wind Chill</span></span>
+          <div class="metric-pill-value tabular">
+            <span id="hudChillDot" class="metric-status-dot"></span><span id="hudChillVal">0°C</span>
+          </div>
+        </div>
+
+        <!-- Hydration -->
+        <div class="metric-pill">
+          <span class="metric-pill-label">💧 <span data-i18n="hudHydro">Hidrasyon</span></span>
+          <div class="metric-pill-value tabular" id="hudHydroVal">3.8 L</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. TAB CONTENT 1: BIOMETRICS & ENVIRONMENT -->
+    <main id="tab-params" class="tab-content active">
+      
+      <!-- Biometrics Card -->
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">⚡ <span data-i18n="bioTitle">Bireysel Biyometri</span></h2>
+          <span class="card-subtag">Mifflin / Baysal</span>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+          <div class="segmented-control">
+            <button type="button" id="btnMale" class="segmented-btn active"><span>👨</span> <span data-i18n="male">Erkek</span></button>
+            <button type="button" id="btnFemale" class="segmented-btn"><span>👩</span> <span data-i18n="female">Kadın</span></button>
+          </div>
+        </div>
+
+        <!-- Age & Height -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="field-label" for="inputAge">
+              <span>🎂 <span data-i18n="ageLabel">Yaş</span></span>
+              <span class="field-unit">yıl</span>
+            </label>
+            <div class="stepper-control">
+              <button type="button" class="stepper-btn" data-for="inputAge" data-step="-1">−</button>
+              <input type="number" id="inputAge" class="stepper-input tabular" min="10" max="99" value="28">
+              <button type="button" class="stepper-btn" data-for="inputAge" data-step="1">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="inputHeight">
+              <span>📏 <span data-i18n="heightLabel">Boy</span></span>
+              <span class="field-unit">cm</span>
+            </label>
+            <div class="stepper-control">
+              <button type="button" class="stepper-btn" data-for="inputHeight" data-step="-1">−</button>
+              <input type="number" id="inputHeight" class="stepper-input tabular" min="100" max="230" value="178">
+              <button type="button" class="stepper-btn" data-for="inputHeight" data-step="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weight & Waist -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="field-label" for="inputWeight">
+              <span>⚖️ <span data-i18n="weightLabel">Mevcut Kilo</span></span>
+              <span class="field-unit">kg</span>
+            </label>
+            <div class="stepper-control">
+              <button type="button" class="stepper-btn" data-for="inputWeight" data-step="-0.5">−</button>
+              <input type="number" id="inputWeight" class="stepper-input tabular" min="30" max="250" step="0.5" value="76">
+              <button type="button" class="stepper-btn" data-for="inputWeight" data-step="0.5">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="inputWaist">
+              <span>📐 <span data-i18n="waistLabel">Bel Çevresi</span></span>
+              <span class="field-unit">cm</span>
+            </label>
+            <div class="stepper-control">
+              <button type="button" class="stepper-btn" data-for="inputWaist" data-step="-1">−</button>
+              <input type="number" id="inputWaist" class="stepper-input tabular" min="40" max="180" value="84">
+              <button type="button" class="stepper-btn" data-for="inputWaist" data-step="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Warnings -->
+        <div id="waistNotice" class="notice-box info"></div>
+        <div id="adjWeightNotice" class="notice-box warning" style="display: none;"></div>
+
+        <!-- Activity Tier Matrix (5-Stage Tactical Rotary Switch) -->
+        <div class="form-group" style="margin-top: 14px; margin-bottom: 0;">
+          <div class="field-label">
+            <span>🏃 <span data-i18n="actLabel">Fiziksel Aktivite Düzeyi</span></span>
+            <span id="actMultBadge" class="field-unit tabular" style="font-weight:700; color:var(--accent-cyan);">1.550×</span>
+          </div>
+          
+          <div class="activity-matrix" id="activityMatrix">
+            <button type="button" class="act-tier-btn" data-act="1.20">
+              <span class="act-tier-emoji">🛋️</span>
+              <span class="act-tier-num">I</span>
+              <span class="act-tier-mult tabular">1.20×</span>
+            </button>
+            <button type="button" class="act-tier-btn" data-act="1.375">
+              <span class="act-tier-emoji">🚶</span>
+              <span class="act-tier-num">II</span>
+              <span class="act-tier-mult tabular">1.375×</span>
+            </button>
+            <button type="button" class="act-tier-btn active" data-act="1.55">
+              <span class="act-tier-emoji">🧭</span>
+              <span class="act-tier-num">III</span>
+              <span class="act-tier-mult tabular">1.550×</span>
+            </button>
+            <button type="button" class="act-tier-btn" data-act="1.725">
+              <span class="act-tier-emoji">🛷</span>
+              <span class="act-tier-num">IV</span>
+              <span class="act-tier-mult tabular">1.725×</span>
+            </button>
+            <button type="button" class="act-tier-btn" data-act="1.90">
+              <span class="act-tier-emoji">🧗</span>
+              <span class="act-tier-num">V</span>
+              <span class="act-tier-mult tabular">1.900×</span>
+            </button>
+          </div>
+
+          <div class="act-detail-card">
+            <div class="act-detail-title" id="actDetailTitle">Orta Seviye Saha Görevi</div>
+            <div class="act-detail-desc" id="actDetailDesc">Saha numune toplama, rutin buzul intikali ve yürüyüş.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Environment Card -->
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">❄️ <span data-i18n="envTitle">Kutup Çevresi & Rüzgar</span></h2>
+          <span class="card-subtag">Huo / Haymes / NOAA</span>
+        </div>
+
+        <!-- Ambient Temp Slider -->
+        <div class="form-group slider-group">
+          <div class="field-label">
+            <span>🌡️ <span data-i18n="tempLabel">Ortam Sıcaklığı</span></span>
+            <span id="tempDisplay" class="field-unit tabular" style="font-weight:700; color:var(--text-primary);">-15°C</span>
+          </div>
+          <input type="range" id="inputTemp" class="range-slider" min="-50" max="15" step="1" value="-15">
+          <div class="pill-presets" id="quickTempPills">
+            <button type="button" class="preset-pill" data-val="5">+5°C (1.03×)</button>
+            <button type="button" class="preset-pill" data-val="0">0°C (1.05×)</button>
+            <button type="button" class="preset-pill" data-val="-10">-10°C (1.08×)</button>
+            <button type="button" class="preset-pill" data-val="-20">-20°C (1.12×)</button>
+            <button type="button" class="preset-pill" data-val="-35">-35°C (1.15×)</button>
+          </div>
+        </div>
+
+        <!-- Wind Speed Slider -->
+        <div class="form-group slider-group" style="margin-top: 18px;">
+          <div class="field-label">
+            <span>💨 <span data-i18n="windLabel">Rüzgar Hızı</span></span>
+            <span id="windDisplay" class="field-unit tabular" style="font-weight:700; color:var(--text-primary);">4.5 m/s (16.2 km/h)</span>
+          </div>
+          <input type="range" id="inputWind" class="range-slider" min="0" max="25" step="0.5" value="4.5">
+          <div class="pill-presets" id="quickWindPills">
+            <button type="button" class="preset-pill" data-val="0.5"><span data-i18n="windCalm">Sakin</span> (1.00×)</button>
+            <button type="button" class="preset-pill" data-val="2.5">2.5 m/s (1.03×)</button>
+            <button type="button" class="preset-pill" data-val="4.5">4.5 m/s (1.07×)</button>
+            <button type="button" class="preset-pill" data-val="8">8 m/s (1.12×)</button>
+            <button type="button" class="preset-pill" data-val="14"><span data-i18n="windStorm">Fırtına</span> (1.12×)</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Thermal Vector Widget (NOAA Wind Chill Spectrum) -->
+        <div class="thermal-vector-widget">
+          <div class="vector-header">
+            <span class="vector-title" data-i18n="thermalGaugeTitle">Termal Isı Kaybı Vektörü</span>
+            <span class="vector-delta tabular" id="vectorDelta">-8.4°C Rüzgar Kaybı</span>
+          </div>
+          <div class="vector-track-wrapper">
+            <div class="vector-track" id="vectorTrack">
+              <div class="vector-connector" id="gaugeConnector"></div>
+              <div class="vector-marker marker-ambient" id="gaugeAmbientMarker">
+                <span class="marker-dot"></span>
+                <span class="marker-tag tabular" id="gaugeAmbientTag">-15°C</span>
+              </div>
+              <div class="vector-marker marker-chill" id="gaugeChillMarker">
+                <span class="marker-dot"></span>
+                <span class="marker-tag tabular" id="gaugeChillTag">-23.4°C</span>
+              </div>
+            </div>
+          </div>
+          <div class="vector-ticks">
+            <span>-60°C</span>
+            <span>-40°C</span>
+            <span>-27°C</span>
+            <span>-10°C</span>
+            <span>0°C</span>
+            <span>+10°C</span>
+          </div>
+        </div>
+
+        <!-- Chill Hazard Banner -->
+        <div id="chillRiskBanner" class="notice-box warning"></div>
+      </div>
+
+    </main>
+
+    <!-- 3. TAB CONTENT 2: NUTRITION & RATIONS -->
+    <main id="tab-rations" class="tab-content">
+
+      <!-- Metabolic Energy Pipeline Card -->
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">🔥 <span data-i18n="pipelineTitle">Metabolik Enerji Pipeline'ı</span></h2>
+          <span class="card-subtag">4 Aşamalı Model</span>
+        </div>
+        <div class="pipeline-grid">
+          <div class="pipeline-node">
+            <span class="pipeline-label">🫀 <span data-i18n="pipeBmrTitle">Adım 1: BMR</span></span>
+            <span class="pipeline-val tabular" id="pipeBmr">0 kcal</span>
+            <span class="pipeline-desc">Mifflin-St Jeor</span>
+          </div>
+          <div class="pipeline-node">
+            <span class="pipeline-label">🏃 <span data-i18n="pipeTdee1Title">Adım 2: TDEE₁</span></span>
+            <span class="pipeline-val tabular" id="pipeTdee1">0 kcal</span>
+            <span class="pipeline-desc tabular" id="pipeActMult">Aktivite ×1.55</span>
+          </div>
+          <div class="pipeline-node">
+            <span class="pipeline-label">🥶 <span data-i18n="pipeTdee2Title">Adım 3: TDEE₂</span></span>
+            <span class="pipeline-val tabular" id="pipeTdee2">0 kcal</span>
+            <span class="pipeline-desc tabular" id="pipeColdMult">Soğuk ×1.12</span>
+          </div>
+          <div class="pipeline-node highlight">
+            <span class="pipeline-label">🌬️ <span data-i18n="pipeTdee3Title">Adım 4: TDEE₃</span></span>
+            <span class="pipeline-val tabular" id="pipeTdee3">0 kcal</span>
+            <span class="pipeline-desc tabular" id="pipeWindMult">Rüzgar ×1.07</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Macro Distribution Card -->
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">⚡ <span data-i18n="macroTitle">Kutup Makrobesin Dağılımı</span></h2>
+          <span class="card-subtag" data-i18n="macroSub">NAS 1996 Standardı</span>
+        </div>
+
+        <div class="macro-progress-bar">
+          <div id="barCarb" class="macro-seg carb" style="width: 48.5%;"></div>
+          <div id="barProt" class="macro-seg protein" style="width: 14.5%;"></div>
+          <div id="barFat" class="macro-seg fat" style="width: 37.0%;"></div>
+        </div>
+
+        <div class="macro-cards-grid">
+          <!-- Carb -->
+          <div class="macro-card carb">
+            <div class="macro-card-title">🌾 <span data-i18n="carb">Karbonhidrat</span></div>
+            <div class="macro-card-grams tabular" id="macroCarbGrams">0g</div>
+            <div class="macro-card-cals tabular" id="macroCarbCals">0 kcal (48.5%)</div>
+          </div>
+          <!-- Protein -->
+          <div class="macro-card protein">
+            <div class="macro-card-title">🥩 <span data-i18n="protein">Protein</span></div>
+            <div class="macro-card-grams tabular" id="macroProtGrams">0g</div>
+            <div class="macro-card-cals tabular" id="macroProtCals">0 kcal (14.5%)</div>
+          </div>
+          <!-- Fat -->
+          <div class="macro-card fat">
+            <div class="macro-card-title">🧈 <span data-i18n="fat">Yağ</span></div>
+            <div class="macro-card-grams tabular" id="macroFatGrams">0g</div>
+            <div class="macro-card-cals tabular" id="macroFatCals">0 kcal (37.0%)</div>
+          </div>
+        </div>
+
+        <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
+          Kutup makrobesin mimarisi; düşük sıcaklıklarda titreme ve metabolik ısı üretimini (shivering & non-shivering thermogenesis) beslemek için %37 yağ ve yüksek glikojen için %48.5 kompleks karbonhidrat gerektirir.
+        </p>
+      </div>
+
+      <!-- Expedition Rations Card -->
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">🍱 <span data-i18n="rationsTitle">4 Fazlı Saha Rasyon Planı</span></h2>
+          <span class="card-subtag">Taktik Dağılım</span>
+        </div>
+
+        <div id="rationsContainer"></div>
+      </div>
+
+    </main>
+
+    <!-- 4. TAB CONTENT 3: QR & FIELD TRANSFER -->
+    <main id="tab-qr" class="tab-content">
+      
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">📡 <span data-i18n="qrTitle">Saha Personeli QR Kimliği</span></h2>
+          <span class="card-subtag" data-i18n="qrSub">Ekip İçi Veri Köprüsü</span>
+        </div>
+
+        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;" data-i18n="qrInfo">
+          Bu QR kod sahadaki araştırmacının metabolik profilini ve çevresel verilerini taşır. İnternetsiz anında aktarılabilir.
+        </p>
+
+        <!-- QR Display Container -->
+        <div class="qr-display-box">
+          <div id="qrCodeContainer"></div>
+        </div>
+
+        <!-- Action Buttons Grid -->
+        <div class="qr-btn-group">
+          <button id="btnDownloadQr" class="action-btn">
+            💾 <span data-i18n="btnDownloadQr">QR İndir</span>
+          </button>
+          <button id="btnCopyReport" class="action-btn">
+            📋 <span data-i18n="btnCopyReport">Rapor Kopyala</span>
+          </button>
+          <button id="btnScanCamera" class="action-btn primary full-width">
+            📷 <span data-i18n="btnScanCamera">Kamera ile QR Oku</span>
+          </button>
+          <button id="btnUploadQr" class="action-btn full-width">
+            📁 <span data-i18n="btnUploadQr">QR Görseli Seç</span>
+          </button>
+          <button id="btnPrintReport" class="action-btn full-width">
+            🖨️ <span data-i18n="btnPrintReport">Saha PDF / Yazdır</span>
+          </button>
+        </div>
+
+        <input type="file" id="qrFileInput" accept="image/*" style="display:none;">
+      </div>
+
+    </main>
+
+    <!-- 5. TAB CONTENT 4: LITERATURE & METHODOLOGY -->
+    <main id="tab-literature" class="tab-content">
+      
+      <div class="nivis-card">
+        <div class="card-title-row">
+          <h2 class="card-title">📚 <span data-i18n="litTitle">Bilimsel Metodoloji & Kaynakça</span></h2>
+          <span class="card-subtag" data-i18n="litSub">Hakemli Literatür</span>
+        </div>
+
+        <ul class="lit-list">
+          <li class="lit-item">
+            <div class="lit-author">Baysal, A. (2022)</div>
+            <div class="lit-desc" data-i18n="lit1Desc">Diyet El Kitabı (13. Baskı). Bel çevresi kardiyovasküler risk eşikleri ve aşırı kilolu/zayıf bireylerde İdeal/Düzeltilmiş Ağırlık formülasyonu.</div>
+          </li>
+          <li class="lit-item">
+            <div class="lit-author">Mifflin, M. D., St Jeor, S. T., et al. (1990)</div>
+            <div class="lit-desc" data-i18n="lit2Desc">Bireysel Bazal Metabolizma Hızı (BMH/BMR) Mifflin-St Jeor denklemi: Sağlıklı bireylerde dinlenme enerji harcaması kestirimi.</div>
+          </li>
+          <li class="lit-item">
+            <div class="lit-author">National Academies of Sciences (1996)</div>
+            <div class="lit-desc" data-i18n="lit3Desc">Kutup ve Yüksek İrtifa Koşullarında Beslenme İhtiyaçları. Bölüm 3: Kutup makrobesin dağılım standardı (%48.5 KH, %14.5 Protein, %37.0 Yağ).</div>
+          </li>
+          <li class="lit-item">
+            <div class="lit-author">van Ooijen et al. (2001) / Huo et al. (2022)</div>
+            <div class="lit-desc" data-i18n="lit4Desc">Akut soğuk maruziyeti, insan metabolizması ve kahverengi yağ dokusu termojenezi. Kademeli soğuk çarpanları (+5°C ila -35°C).</div>
+          </li>
+          <li class="lit-item">
+            <div class="lit-author">Haymes, E. M., et al. (1982)</div>
+            <div class="lit-desc" data-i18n="lit5Desc">Soğukta egzersiz sırasında rüzgarın termal ve metabolik yanıtlara etkisi. Konvektif rüzgar ısı kaybı ve enerji gereksinimi çarpanları.</div>
+          </li>
+          <li class="lit-item">
+            <div class="lit-author">NOAA Joint Action Group (2001)</div>
+            <div class="lit-desc" data-i18n="lit6Desc">NOAA Rüzgar Soğuğu Sıcaklık İndeksi (Wind Chill Temperature Index) ve donma süresi (frostbite) eşik risk kataloğu.</div>
+          </li>
+        </ul>
+      </div>
+
+      <footer style="text-align:center; padding: 20px 0; font-size:0.75rem; color:var(--text-muted);">
+        <div><strong>NIVIS v2.2</strong> | Polar Field Decision Support Console</div>
+        <div>Bilimsel Model & Tasarım: <strong>Serhat Tuna Atalay</strong></div>
+      </footer>
+
+    </main>
+
+    <!-- 6. BOTTOM NAVIGATION BAR (Thumb-Friendly Mobile Nav) -->
+    <nav class="bottom-nav">
+      <div class="nav-grid">
+        <button type="button" class="nav-tab-btn active" data-tab="tab-params">
+          <span class="nav-tab-icon">⚡</span>
+          <span data-i18n="navParams">Parametre</span>
+        </button>
+        <button type="button" class="nav-tab-btn" data-tab="tab-rations">
+          <span class="nav-tab-icon">🍱</span>
+          <span data-i18n="navRations">Rasyon</span>
+        </button>
+        <button type="button" class="nav-tab-btn" data-tab="tab-qr">
+          <span class="nav-tab-icon">📡</span>
+          <span data-i18n="navQR">Saha QR</span>
+        </button>
+        <button type="button" class="nav-tab-btn" data-tab="tab-literature">
+          <span class="nav-tab-icon">📚</span>
+          <span data-i18n="navLit">Literatür</span>
+        </button>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- QR CAMERA SCANNER MODAL -->
+  <div id="scannerModal" class="modal-overlay">
+    <div class="modal-sheet">
+      <button type="button" id="closeScannerBtn" class="modal-close">&times;</button>
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:4px;" data-i18n="scannerTitle">Saha QR Tarayıcı</h3>
+      <p style="font-size:0.8rem; color:var(--text-secondary);" data-i18n="scannerHint">Kamerayı diğer personelin NIVIS QR koduna doğrultun:</p>
+      
+      <div class="scanner-box">
+        <video id="scannerVideo" class="scanner-video"></video>
+        <div class="scanner-reticle"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./src/engine.js"></script>
+  <script src="./src/qr.js"></script>
+  <script src="./src/ui.js"></script>
+</body>
+</html>
