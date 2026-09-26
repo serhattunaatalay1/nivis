@@ -15,3 +15,10 @@ android/*.iml
 android/app/*.iml
 .gradle/
 build/
+
+# Binaries and signing artifacts
+*.apk
+*.aab
+*.zip
+extracted_apk/
+android_keys/

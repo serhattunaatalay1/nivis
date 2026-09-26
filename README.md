@@ -17,10 +17,13 @@
 
 NIVIS, hem tarayıcıda çalışan bir **PWA** (Progressive Web App) hem de Android cihazlar için **yerel APK** olarak paketlenmiştir:
 
-1. [GitHub Releases](https://github.com/serhattunaatalay1/nivis/releases) sayfasına gidin.
-2. En güncel sürümün altındaki `app-debug.apk` dosyasını telefonunuza indirin.
-3. Telefonda APK'yı açarak kurulumu tamamlayın.
-4. Sıfır internet bağlantısıyla kutupta veya dağda doğrudan çalıştırın!
+* 📥 **[Doğrudan İndir: NIVIS v2.2.0 APK](https://github.com/serhattunaatalay1/nivis/releases/download/v2.2.0/NIVIS.apk)** (1.1 MB)
+* 🏷️ **[Tüm Sürümler (GitHub Releases)](https://github.com/serhattunaatalay1/nivis/releases)**
+
+**Telefona Kurulum:**
+1. Yukarıdaki linke tıklayarak `NIVIS.apk` dosyasını telefonunuza indirin.
+2. İndirilen dosyaya dokunup kurulumu onaylayın.
+3. Sıfır internet bağlantısıyla kutupta veya dağda bağımsız çalıştırın!
 
 ---
 
