@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.serhat.nivis",
+      "sha256_cert_fingerprints": [
+        "36:3F:5F:16:D2:00:EE:74:80:EA:AA:59:6D:6E:66:88:5F:4E:F1:26:5C:DE:B4:D3:38:25:28:C4:4C:A1:45:6F",
+        "FE:B4:3A:1F:FE:5C:AE:78:B3:50:BD:71:0B:DC:34:A8:EB:9E:4C:E3:C9:8B:60:CF:2E:58:8D:A6:F9:80:92:D6"
+      ]
+    }
+  }
+]

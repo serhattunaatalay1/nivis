@@ -30,4 +30,9 @@ if (fs.existsSync(srcDir)) {
   fs.cpSync(srcDir, path.join(outDir, 'src'), { recursive: true });
 }
 
+const wellKnownDir = path.join(__dirname, '.well-known');
+if (fs.existsSync(wellKnownDir)) {
+  fs.cpSync(wellKnownDir, path.join(outDir, '.well-known'), { recursive: true });
+}
+
 console.log('✓ Successfully prepared www/ directory for Capacitor Android build');

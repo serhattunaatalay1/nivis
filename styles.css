@@ -79,7 +79,21 @@ input, textarea {
   user-select: auto;
 }
 
-html, body {
+html {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  height: auto;
+  min-height: 100%;
+}
+
+body {
   background-color: var(--bg-app);
   background-image: 
     radial-gradient(ellipse 90% 60% at 50% -10%, rgba(14, 165, 233, 0.26), transparent 75%),
@@ -88,13 +102,11 @@ html, body {
     linear-gradient(180deg, #040714 0%, #070E22 50%, #040714 100%);
   background-attachment: fixed;
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.45;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overflow-y: visible;
+  touch-action: pan-y;
   min-height: 100vh;
-  min-height: -webkit-fill-available;
+  overscroll-behavior-y: auto;
 }
 
 /* Tabular numbers for all telemetry */
@@ -125,7 +137,8 @@ html, body {
   flex-direction: column;
   position: relative;
   z-index: 1;
-  padding-bottom: calc(var(--nav-height) + 16px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--nav-height) + 20px + env(safe-area-inset-bottom, 0px));
+  touch-action: pan-y;
 }
 
 /* ==========================================================================
@@ -293,6 +306,7 @@ html, body {
   display: none;
   padding: 16px;
   animation: fadeIn 0.2s var(--ease-snappy);
+  touch-action: pan-y;
 }
 
 .tab-content.active {
@@ -315,6 +329,7 @@ html, body {
   margin-bottom: 14px;
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.07);
   transition: transform 0.25s var(--ease-spring), border-color 0.25s ease, box-shadow 0.25s ease;
+  touch-action: pan-y;
 }
 
 .nivis-card:hover {
