@@ -1,0 +1,77 @@
+name: Build Native Android APK
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Build Web Assets into www
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      - name: Build Real Native Debug APK with Gradle
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Prepare Named Native APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk NIVIS-Native.apk
+
+      - name: Upload Native APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIVIS-Native-Android-APK
+          path: NIVIS-Native.apk
+          if-no-files-found: error
+
+      - name: Publish or Update GitHub Release with Native APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.3.0
+          name: NIVIS v2.3.0 - Real Native Android APK (Zero Web Wrapper)
+          body: |
+            ### ❄️ NIVIS v2.3.0 - Gerçek Native Android APK (Capacitor Engine)
+
+            Bu sürüm bir PWA veya TWA web sitesi sarmalayıcısı DEĞİLDİR. Tamamen Android işletim sisteminde yerel çalışan saf **Native Android APK**'sıdır.
+
+            - 🚀 **Sıfır Web Sitesi / Sıfır Adres Çubuğu:** Tarayıcı çubuğu, URL barı, yenile ikonu veya Chrome Custom Tabs YOK. Doğrudan yerel mobil uygulama penceresinde açılır.
+            - 📜 **Akıcı Dokunmatik Kaydırma (Scroll Fix):** `overflow-x: clip;` ve `touch-action: pan-y;` ile ekranın her yerinde doğal dokunmatik kaydırma.
+            - ⚡ **%100 Çevrimdışı Çalışma:** Tüm arayüz ve 14/14 bilimsel formül doğrudan APK'nın içine gömülüdür. İnternet olmadan dağda veya kutupta anında açılır.
+          files: |
+            NIVIS-Native.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

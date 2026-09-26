@@ -1,9 +1,9 @@
 /**
- * NIVIS - Offline Expedition Service Worker
+ * NIVIS - Offline Expedition Service Worker v2.3.0
  * Kutup sahasında sıfır internet ile %100 çevrimdışı çalışma garantisi.
  */
 
-const CACHE_NAME = 'nivis-cache-v2.0';
+const CACHE_NAME = 'nivis-cache-v2.3.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -19,10 +19,11 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -32,6 +33,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Purging outdated cache:', key);
             return caches.delete(key);
           }
         })
@@ -40,12 +42,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Network-first strategy for updated assets, fallback to cache when offline
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    }).catch(() => {
-      return caches.match('./index.html');
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          return cachedResponse || caches.match('./index.html');
+        });
+      })
   );
 });

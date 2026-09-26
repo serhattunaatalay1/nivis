@@ -13,18 +13,18 @@
 
 ---
 
-## 📱 Bağımsız Android APK İndirme & Kurulum
+## 📱 Gerçek Native Android APK İndirme & Kurulum
 
-NIVIS, tamamen yerel bir Android uygulaması (Embedded Standalone APK) olarak paketlenmiştir:
+NIVIS, web sitesi sarmalayıcısı olmayan **saf yerel Android APK'sı** (Capacitor Native Engine) olarak paketlenmiştir:
 
-* 📥 **[Doğrudan İndir: NIVIS v2.2.1 Standalone APK](https://github.com/serhattunaatalay1/nivis/releases/download/v2.2.1/NIVIS-Standalone.apk)** (Gömülü, internetsiz, tarayıcısız)
+* 📥 **[Doğrudan İndir: NIVIS v2.3.0 Native APK](https://github.com/serhattunaatalay1/nivis/releases/download/v2.3.0/NIVIS-Native.apk)** (Saf yerel Android uygulaması, tarayıcısız, adres çubuğu yok)
 * 🏷️ **[Tüm Sürümler & İndirmeler (GitHub Releases)](https://github.com/serhattunaatalay1/nivis/releases)**
 * 🌐 **[Canlı Web Sürümü (GitHub Pages)](https://serhattunaatalay1.github.io/nivis/)**
 
 **Telefona Kurulum:**
-1. Yukarıdaki linkten `NIVIS-Standalone.apk` dosyasını telefonunuza indirin.
+1. Yukarıdaki linkten `NIVIS-Native.apk` dosyasını telefonunuza indirin.
 2. İndirilen dosyaya tıklayın ve kurulumu onaylayın.
-3. Uygulama herhangi bir tarayıcı veya URL barı olmadan, tam ekran ve %100 internetsiz çalışır!
+3. Uygulama herhangi bir web sitesi veya URL barı olmadan, telefonun kendi işletim sistemi arayüzünde tam ekran çalışır!
 
 ---
 
