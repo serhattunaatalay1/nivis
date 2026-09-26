@@ -72,11 +72,6 @@ body.field-mode .segmented-btn {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-input, textarea {
-  user-select: auto;
 }
 
 html {
@@ -85,12 +80,10 @@ html {
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.45;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   height: auto;
   min-height: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -102,11 +95,9 @@ body {
     linear-gradient(180deg, #040714 0%, #070E22 50%, #040714 100%);
   background-attachment: fixed;
   color: var(--text-primary);
-  overflow-x: hidden;
-  overflow-y: visible;
-  touch-action: pan-y;
   min-height: 100vh;
-  overscroll-behavior-y: auto;
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
 /* Tabular numbers for all telemetry */
@@ -750,6 +741,7 @@ body {
   outline: none;
   margin: 12px 0 8px 0;
   border: 1px solid var(--border-subtle);
+  touch-action: pan-y;
 }
 
 .range-slider::-webkit-slider-thumb {
