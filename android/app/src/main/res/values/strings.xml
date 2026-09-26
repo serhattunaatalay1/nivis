@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NIVIS</string>
+    <string name="title_activity_main">NIVIS</string>
+    <string name="package_name">com.serhat.nivis</string>
+    <string name="custom_url_scheme">com.serhat.nivis</string>
+</resources>

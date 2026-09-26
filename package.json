@@ -4,8 +4,15 @@
   "description": "Polar Field Telemetry & Metabolic Decision Support System",
   "main": "src/engine.js",
   "scripts": {
-    "test": "node tests/engine.test.js"
+    "test": "node tests/engine.test.js",
+    "build": "node build.js",
+    "sync": "node build.js && npx cap sync android"
   },
   "author": "Serhat Tuna Atalay",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  }
 }
